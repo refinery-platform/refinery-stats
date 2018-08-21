@@ -24,7 +24,7 @@ The output from Altair is a Vega-Lite schema (`chart.json`). This chart can be e
 
 <script type="text/javascript">
   
-  var spec = "your-url/chart.json";
+  var spec = "chart.json";
   vegaEmbed('#vis', spec);
   
 </script>
@@ -32,57 +32,24 @@ The output from Altair is a Vega-Lite schema (`chart.json`). This chart can be e
 </html>
 ```
 
-### Reusing the Vega-Lite schema
-The `chart.json` schema created with Altair contains a single dataset. You can create a reusable schema by defining a REST API endpoint containing `refinery-stats.csv` and specify this within the schema. Edit the `chart.json` by removing the top-level dataset and replacing each reference to this dataset with a url definition:
-```javascript
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.6.0.json",
-  "config": {"view": {"height": 300, "width": 400}},
-  // Remove top-level dataset
-  // "datasets": { 
-      // "data-a85ba82af39c1fa11dd908a952905777": [
-        // {
-          //"datasets_shared": 1,
-          // "datasets_uploaded": 1,
-          // "groups_created": 0,
-          // "run_date": "2018-08-16T00:00:00",
-          // "total_user_logins": 5,
-          // "total_visualization_launches": 2,
-          // "total_workflow_launches": 0,
-          // "unique_user_logins": 4,
-          // "users_created": 18
-        // }, 
-        //...
-      // ]
-  //},
-  ...
-  {
-  ...
-    {
-      // Remove reference to top-level dataset and replace with url
-      // "data": {"name": "data-a85ba82af39c1fa11dd908a952905777"}, 
-      "data": {"url": "api/refinery-usage.csv"},
-      "encoding": {
-        "x": {"field": "run_date", "title": null, "type": "temporal"},
-        "y": {"field": "users_created", "title": null, "type": "quantitative"}
-      },
-     },
-     .
-     .
-     .
-     {
-      // Remove reference to top-level dataset and replace with url
-      // "data": {"name": "data-a85ba82af39c1fa11dd908a952905777"}, 
-      "data": {"url": "api/refinery-usage.csv"},
-      "encoding": {
-        "x": {"field": "run_date", "title": null, "type": "temporal"},
-        "y": {"field": "datasets_shared", "title": null, "type": "quantitative"}
-      },
-     },
-     .
-     .
-     .
-     // Repeat
-}
+### Create a reusable schema
+You can create a reusable schema by defining a REST API endpoint for `refinery-stats.csv` and running the Jupyter Notebook again. Just replace the URL:
+```python
+# add API endpoint below
+url = "http://your-url/refinery-usage.csv"
+
+data = alt.UrlData(url)
+
+# define columns at endpoint as below, and normalize the time of each entry
+columns = [
+    "datasets_shared",
+    "datasets_uploaded",
+    "groups_created",
+    "total_user_logins",
+    "total_visualization_launches",
+    "total_workflow_launches",
+    "users_created",
+    "unique_user_logins",
+]
 ```
-An example of a working reusable schema is located [here](https://beta.observablehq.com/@manzt/refinery-stats).
+`chart.json` will now serve as a reusable schema. An example of a working example is located [here](https://beta.observablehq.com/@manzt/refinery-stats).
